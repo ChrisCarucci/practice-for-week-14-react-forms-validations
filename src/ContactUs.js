@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function ContactUs() {
   const [name, setName] = useState('');
@@ -6,10 +6,22 @@ function ContactUs() {
   const [phone, setPhone] = useState('');
   const [phoneType, setPhoneType] = useState('');
   const [comments, setComments] = useState('');
-  
+  const [validationErrors, setValidationErrors] = useState([]);
+  const [hasSubmitted, setHasSubmitted] = useState(false)
+
+
   const onSubmit = e => {
-    // Prevent the default form behavior so the page doesn't reload.
+
+    
+    
     e.preventDefault();
+    setHasSubmitted(true)
+
+    // Prevent the default form behavior so the page doesn't reload.
+    if (validationErrors.length > 0) {
+      return alert("Can't submit form due to errors.")
+
+    }
 
     // Create a new object for the contact us information.
     const contactUsInformation = {
@@ -18,6 +30,7 @@ function ContactUs() {
       phone,
       phoneType,
       comments,
+      setHasSubmitted: false,
       submittedOn: new Date()
     };
 
@@ -33,10 +46,32 @@ function ContactUs() {
     setComments('');
   }
 
+  useEffect(() => {
+    const errors = [];
+    if (name.length <= 0) {
+      errors.push("Please enter your name..")
+    }
+
+    if (!email.includes("@")) {
+      errors.push("Please enter a valid email..")
+    }
+    setValidationErrors(errors)
+  }, [name, email])
+
   return (
     <div>
       <h2>Contact Us</h2>
       <form onSubmit={onSubmit}>
+      {hasSubmitted && validationErrors.length > 0 && (
+          <div>
+            The following errors were found:
+            <ul>
+              {validationErrors.map((error) => {
+                return <li key={error}>{error}</li>;
+              })}
+            </ul>
+          </div>
+        )}
         <div>
           <label htmlFor='name'>Name:</label>
           <input
