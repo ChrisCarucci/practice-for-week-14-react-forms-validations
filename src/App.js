@@ -1,4 +1,4 @@
-import ContactUs from './ContactUs'
+import ContactUs from './Components/ContactUs'
 
 function App() {
   return (
